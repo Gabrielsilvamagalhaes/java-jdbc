@@ -21,6 +21,8 @@ public class Program {
         List<Seller> sellers = sellerDao.searchAll();
         sellers.forEach(s -> System.out.println(s));
         System.out.println("---------------------");
+        System.out.println("===Create===");
+        
 
     }
     

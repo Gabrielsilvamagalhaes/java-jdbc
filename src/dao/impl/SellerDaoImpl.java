@@ -24,17 +24,71 @@ public class SellerDaoImpl implements SellerDao {
 
     @Override
     public void create(Seller seller) {
+        PreparedStatement ps = null;
+        String sql = "INSERT INTO seller "
+        + "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+        + "VALUES "
+        + "(?, ?, ?, ?, ?)";
+
+        try {
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, seller.getName());
+            ps.setString(2, seller.getEmail());
+            ps.setDate(3, seller.getBirthDate());
+            ps.setDouble(4, seller.getBaseSalary());
+            ps.setInt(5, seller.getDepartment().getId());
+            ps.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            Connect.closeStatement(ps);
+        }
         
         
     }
 
     @Override
     public void update(Seller seller) {
+        if(seller == null || seller.getId() == null) {
+            return;
+        }
+        PreparedStatement ps = null;
+        String sql = "UPDATE seller "
+        + "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? "
+        + "WHERE Id = ?";
+        try {
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, seller.getName());
+            ps.setString(2, seller.getEmail());
+            ps.setDate(3, seller.getBirthDate());
+            ps.setDouble(4, seller.getBaseSalary());
+            ps.setInt(5, seller.getDepartment().getId());
+            ps.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            Connect.closeStatement(ps);
+        }
         
     }
 
     @Override
     public void delete(Seller seller) {
+        PreparedStatement ps = null;
+        String sql = "DELETE FROM seller WHERE Id = ?";
+        
+        try {
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, seller.getId());
+            ps.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            Connect.closeStatement(ps);
+        }
         
     }
 
@@ -89,6 +143,8 @@ public class SellerDaoImpl implements SellerDao {
             
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            Connect.close(rs, ps);
         }
         return null;
     }
@@ -111,7 +167,7 @@ public class SellerDaoImpl implements SellerDao {
             rs = ps.executeQuery();
             while(rs.next()) {
                 Department department = mapDepartment.get(rs.getInt("DepartmentId"));
-                
+
                 if(department == null) {
                     department = instantiateDepartment(rs);
                     mapDepartment.put(rs.getInt("DepartmentId"), department);
