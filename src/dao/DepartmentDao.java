@@ -1,10 +1,15 @@
 package dao;
 
+import java.util.List;
+
+import entities.Department;
+
 public interface DepartmentDao {
-    void create();
-    void update();
-    void delete();
-    void searchAll();
-    void searchByName();
+    void create(Department department);
+    void update(Department department);
+    void delete(Department department);
+    
+    List<Department> searchAll();
+    List<Department> searchById(Integer id);
     
 }
