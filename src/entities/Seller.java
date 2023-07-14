@@ -1,13 +1,18 @@
 package entities;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
-public class Seller {
+public class Seller implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     private Integer id;
     private String name;
     private String email;
     private LocalDate birthDate;
     private Double baseSalary;
+
     private Department department;
     
     public Seller() {
@@ -85,12 +90,51 @@ public class Seller {
     public Double getBaseSalary() {
         return baseSalary;
     }
-
+    
     /**
      * @param baseSalary the baseSalary to set
      */
     public void setBaseSalary(Double baseSalary) {
         this.baseSalary = baseSalary;
     }
+
+    /**
+     * @return Department return the department
+     */
+    public Department getDepartment() {
+        return department;
+    }
+
+    /**
+     * @param department the department to set
+     */
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + id + ") - " + name + ", " + email + ", R$" + baseSalary;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Seller other = (Seller) obj;
+        return Objects.equals(id, other.id);
+    }
+
+
+
 
 }
