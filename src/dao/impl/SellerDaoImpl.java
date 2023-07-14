@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dao.SellerDao;
 import db.Connect;
@@ -22,6 +24,7 @@ public class SellerDaoImpl implements SellerDao {
 
     @Override
     public void create(Seller seller) {
+        
         
     }
 
@@ -93,6 +96,7 @@ public class SellerDaoImpl implements SellerDao {
     @Override
     public List<Seller> searchByDepartmentId(Integer id) {
         List<Seller> sellers = new ArrayList<>();
+        Map<Integer,Department> mapDepartment = new HashMap<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         String sql = "SELECT seller.*,department.Name as DepName "
@@ -105,10 +109,16 @@ public class SellerDaoImpl implements SellerDao {
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             rs = ps.executeQuery();
-
             while(rs.next()) {
-                sellers.add(instantiateSeller(rs, instantiateDepartment(rs)));
+                Department department = mapDepartment.get(rs.getInt("DepartmentId"));
+                
+                if(department == null) {
+                    department = instantiateDepartment(rs);
+                    mapDepartment.put(rs.getInt("DepartmentId"), department);
+                }
+                sellers.add(instantiateSeller(rs, mapDepartment.get(department.getId())));
             }
+
             if(!sellers.isEmpty()) {
                 return sellers;
             }
