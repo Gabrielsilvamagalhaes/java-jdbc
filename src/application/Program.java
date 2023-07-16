@@ -12,7 +12,7 @@ public class Program {
     public static void main(String[] args) {
         SellerDao sellerDao = DaoFactory.createSellerDao();
 
-        //Department department = new Department(2, null);
+        Department department = new Department(2, null);
 
         System.out.println("===SearchBydId===");
         Seller s1 = sellerDao.searchById(3);
@@ -29,12 +29,12 @@ public class Program {
         sellers.forEach(s -> System.out.println(s));
 
         System.out.println("---------------------");
-        //Seller newSeller = new Seller(null, "Greg", "greg@gmail.com", new Date(), 4000.0, department);
-        //sellerDao.create(newSeller);
-        //System.out.println("===Create=== + id = " + newSeller.getId());
+        Seller newSeller = new Seller(null, "Greg", "greg@gmail.com", new Date(), 4000.0, department);
+        sellerDao.create(newSeller);
+        System.out.println("===Create=== + id = " + newSeller.getId());
 
-        //sellerDao.deleteById(11);
-        //System.out.println("===Delete===");
+        sellerDao.deleteById(11);
+        System.out.println("===Delete===");
 
         System.out.println("===Update===");
         s1.setName("Rafael");

@@ -14,7 +14,7 @@ public class Program2 {
         System.out.println("===Create=== + id = " + newDepartment.getId());
         System.out.println("---------------------");
         
-        //departmentDao.deleteById(9);
+        departmentDao.deleteById(9);
         System.out.println("===Delete===");
         System.out.println("---------------------");
 
