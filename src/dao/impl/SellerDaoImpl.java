@@ -111,10 +111,9 @@ public class SellerDaoImpl implements SellerDao {
     @Override
     public void deleteById(Integer id) {
         PreparedStatement ps = null;
-        String sql = "DELETE FROM seller WHERE Id = ?";
 
         try {
-            ps = conn.prepareStatement(sql);
+            ps = conn.prepareStatement("DELETE FROM seller WHERE Id = ?");
             ps.setInt(1, id);
 
             ps.executeUpdate();
