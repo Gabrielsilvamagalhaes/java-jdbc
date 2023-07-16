@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,13 +32,25 @@ public class SellerDaoImpl implements SellerDao {
         + "(?, ?, ?, ?, ?)";
 
         try {
-            ps = conn.prepareStatement(sql);
+            ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, seller.getName());
             ps.setString(2, seller.getEmail());
-            ps.setDate(3, seller.getBirthDate());
+            ps.setDate(3, new java.sql.Date(seller.getBirthDate().getTime()));
             ps.setDouble(4, seller.getBaseSalary());
             ps.setInt(5, seller.getDepartment().getId());
-            ps.executeUpdate();
+
+            int rowsAffected = ps.executeUpdate();
+
+            if(rowsAffected > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if(rs.next()) {
+                    int id = rs.getInt(1);
+                    seller.setId(id);
+                }
+                Connect.closeResultSet(rs);
+            }else {
+				throw new DbException("Unexpected error! No rows affected!");
+			}
             
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,7 +74,7 @@ public class SellerDaoImpl implements SellerDao {
             ps = conn.prepareStatement(sql);
             ps.setString(1, seller.getName());
             ps.setString(2, seller.getEmail());
-            ps.setDate(3, seller.getBirthDate());
+            ps.setDate(3, new java.sql.Date(seller.getBirthDate().getTime()));
             ps.setDouble(4, seller.getBaseSalary());
             ps.setInt(5, seller.getDepartment().getId());
             ps.executeUpdate();
@@ -93,6 +106,24 @@ public class SellerDaoImpl implements SellerDao {
     }
 
     @Override
+    public void deleteById(Integer id) {
+        PreparedStatement ps = null;
+        String sql = "DELETE FROM seller WHERE Id = ?";
+
+        try {
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            Connect.closeStatement(ps);
+        }
+
+    }
+
+    @Override
     public Seller searchById(Integer id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -121,6 +152,7 @@ public class SellerDaoImpl implements SellerDao {
     @Override
     public List<Seller> searchAll() {
         List<Seller> sellers = new ArrayList<>();
+        Map<Integer, Department> mapDepartment = new HashMap<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         String sql = "SELECT seller.*,department.Name as DepName "
@@ -132,9 +164,16 @@ public class SellerDaoImpl implements SellerDao {
         try {
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
-
+            
             while(rs.next()) {
-                sellers.add(instantiateSeller(rs, instantiateDepartment(rs)));
+                Department department = mapDepartment.get(rs.getInt("DepartmentId"));
+
+                if(department == null) {
+                    department = instantiateDepartment(rs);
+                    mapDepartment.put(rs.getInt("DepartmentId"), department);
+                }
+
+                sellers.add(instantiateSeller(rs, mapDepartment.get(department.getId())));
             }
 
             if(!sellers.isEmpty()) {
