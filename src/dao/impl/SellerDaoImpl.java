@@ -77,6 +77,8 @@ public class SellerDaoImpl implements SellerDao {
             ps.setDate(3, new java.sql.Date(seller.getBirthDate().getTime()));
             ps.setDouble(4, seller.getBaseSalary());
             ps.setInt(5, seller.getDepartment().getId());
+            ps.setInt(6, seller.getId());
+            
             ps.executeUpdate();
             
         } catch (SQLException e) {
@@ -95,6 +97,7 @@ public class SellerDaoImpl implements SellerDao {
         try {
             ps = conn.prepareStatement(sql);
             ps.setInt(1, seller.getId());
+
             ps.executeUpdate();
             
         } catch (SQLException e) {
@@ -113,6 +116,7 @@ public class SellerDaoImpl implements SellerDao {
         try {
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
+
             ps.executeUpdate();
 
         } catch (SQLException e) {

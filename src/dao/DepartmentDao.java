@@ -10,6 +10,6 @@ public interface DepartmentDao {
     void delete(Department department);
     
     List<Department> searchAll();
-    List<Department> searchById(Integer id);
+    Department searchById(Integer id);
     
 }
